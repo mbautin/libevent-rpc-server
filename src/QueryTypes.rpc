@@ -1,0 +1,8 @@
+struct StatRequest {
+   optional int uptime = 1;
+   optional int uname = 2;
+}
+struct StatReply {
+   optional string uptime = 1;
+   optional string uname = 2;
+}
