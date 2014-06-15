@@ -387,4 +387,3 @@ evtag_marshal_StatReply(struct evbuffer *evbuf, ev_uint32_t tag, const struct St
   evtag_marshal_buffer(evbuf, tag, buf_);
    evbuffer_free(buf_);
 }
-

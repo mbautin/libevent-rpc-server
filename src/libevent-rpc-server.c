@@ -23,7 +23,7 @@ EVRPC_GENERATE(GetServerStat, StatRequest, StatReply);
 struct event_base* serv_base;
 struct evrpc_base* rpc_base;
 struct evhttp* http_base;
-evutil_socket_t server_sock; 
+evutil_socket_t server_sock;
 
 void GetServerStatCB(EVRPC_STRUCT(GetServerStat)* rpc, void *arg) {
   struct StatRequest * request = rpc->request;
@@ -63,7 +63,7 @@ void cleanup() {
     close(server_sock);
     server_sock = -1;
   }
-  
+
 }
 
 void cleanup_callback(evutil_socket_t fd, short events, void * arg) {
@@ -77,12 +77,12 @@ int main(void) {
     perror("event_base_new() failed");
     return EXIT_FAILURE;
   }
-  
+
   server_sock = socket(AF_INET, SOCK_STREAM, 0);
-  
+
   int reuseaddr_opt_val = 1;
   setsockopt(server_sock, SOL_SOCKET,SO_REUSEADDR, &reuseaddr_opt_val, sizeof(int));
-  
+
   if (server_sock == -1) {
     perror("socket() failed");
     return EXIT_FAILURE;
@@ -91,7 +91,7 @@ int main(void) {
     perror("evutil_make_socket_nonblocking() failed");
     return EXIT_FAILURE;
   }
-  
+
   struct sockaddr_in sin;
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = 0;
@@ -108,23 +108,22 @@ int main(void) {
   printf("Listening on port %d\n", port);
 
   http_base = evhttp_new(serv_base);
-  
+
   if (evhttp_accept_socket(http_base, server_sock) == -1) {
     fputs("evhttp_accept_socket() failed", stderr);
     return EXIT_FAILURE;
   }
 
   rpc_base = evrpc_init(http_base);
-  
+
   EVRPC_REGISTER(rpc_base, GetServerStat, StatRequest, StatReply, GetServerStatCB, NULL);
   evhttp_set_gencb(http_base, generic_request_handler, NULL);
-  
+
   struct event* signal_event = event_new(serv_base, SIGINT, EV_SIGNAL | EV_PERSIST, cleanup_callback, NULL);
   event_add(signal_event, NULL);
-  
+
   event_base_dispatch(serv_base);
 
   cleanup();
 	return EXIT_SUCCESS;
 }
-
